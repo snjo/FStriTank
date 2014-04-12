@@ -42,13 +42,9 @@ namespace FStriTank
         // Only check the resource level periodically. Not really important in this module, but in other modules that look at all tanks in the vessel, it could help. In seconds.
         private float updateFrequency = 1f;
         // The current countodwn time, in seconds
-        private float resourceUpdateCountdown = 1f;        
+        private float resourceUpdateCountdown = 1f;                
 
-        //private double fuelLevel = 0f;        
-        //private List<PartResource> resourceList = new List<PartResource>();        
-        private float currentFuel = 0f;
-        private float maxFuel = 0f;
-
+        // The current 3 dimensional G-force of the part is calculated each fixed update
         private Vector3 Gforce = Vector3.zero;
         private Vector3 oldVelocity = Vector3.zero;
 
@@ -91,7 +87,7 @@ namespace FStriTank
                 getPartResource();
 
                 // Turn off all fuel level objects expect the max level one. Will be updated in OnUpdate anyways.
-                showFuelLevel(liquidLevels);                                
+                showFuelLevel(1f);                                
             }
         }
 
@@ -144,7 +140,7 @@ namespace FStriTank
 
         private void showFuelLevel(float fuelLevel)
         {
-            int newLevel = (int)(fuelLevel * 10);
+            int newLevel = Mathf.FloorToInt(fuelLevel * liquidLevels);
             //Disclaimer: Working with list and array index numbers can be confusing. Expect out of range errors the first time you run it unless you REALLY though it through. Which I didn't.
 
             newLevel -= 1; // an incoming 0 is empty. Inside this function an empty value is converted to -1, so that the max value matches the index number of the list.
@@ -155,7 +151,7 @@ namespace FStriTank
                 if (i == newLevel)
                 {
                     // using setActive should prevent errors if there is no mesh renderer on the game object.
-                    liquidLevelTransforms[i].gameObject.SetActive(true);
+                    liquidLevelTransforms[i].gameObject.SetActive(true);                    
                 }
                 else
                 {
@@ -170,8 +166,8 @@ namespace FStriTank
             if (resourceUpdateCountdown <= 0)
             {
                 // Reset the fuel levels in case there's an error in the next step
-                currentFuel = 0f;
-                maxFuel = 0f;
+                float currentFuel = 0f;
+                float maxFuel = 0f;
                 
                 // In a badly configured part, looking for an amount in a resource that doesn't actually exist would cause endless error messages. This is a bit of a left over from older more advanced code, but it's a handy thing in some cases.
                 try
