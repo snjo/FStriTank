@@ -104,13 +104,25 @@ namespace FStriTank
             {
                 // Update the current fuel levels in the part
                 updateFuel();
+                
+                liquidRotator.rotation = Quaternion.LookRotation(Vector3.Lerp(vessel.upAxis, -Gforce.normalized, 0.3f)); //Mathf.Clamp(Gforce.magnitude / 10f, 0f, 1f)));
+            }
+        }
 
+        public void FixedUpdate()
+        {
+            if (HighLogic.LoadedSceneIsFlight)
+            {
+                // Looking at velocities seems more stable in the physic's FixedUpdate, than in the Update/OnUpdate, which is used for rendering updates.
                 if (part.rigidbody.velocity.magnitude > 0.2f)
-                    Gforce = oldVelocity - part.rigidbody.velocity;
+                {
+                    Gforce = Vector3.Lerp(Gforce, oldVelocity - part.rigidbody.velocity, 0.2f);
+                }
                 else
+                {
                     Gforce = Vector3.zero;
+                }
                 oldVelocity = part.rigidbody.velocity;
-                liquidRotator.rotation = Quaternion.LookRotation(Vector3.Lerp(vessel.upAxis, Gforce.normalized, 1f)); //Mathf.Clamp(Gforce.magnitude / 10f, 0f, 1f)));
             }
         }
 
