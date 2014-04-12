@@ -95,27 +95,16 @@ namespace FStriTank
             }
         }
 
-
-
-        public override void OnUpdate()
-        {
-            // only run this code when in the hangar
-            if (HighLogic.LoadedSceneIsFlight)
-            {
-                // Update the current fuel levels in the part
-                updateFuel();
-                
-                liquidRotator.rotation = Quaternion.LookRotation(Vector3.Lerp(vessel.upAxis, -Gforce.normalized, 0.3f)); //Mathf.Clamp(Gforce.magnitude / 10f, 0f, 1f)));
-            }
-        }
-
         public void FixedUpdate()
         {
             if (HighLogic.LoadedSceneIsFlight)
             {
                 // Looking at velocities seems more stable in the physic's FixedUpdate, than in the Update/OnUpdate, which is used for rendering updates.
+
+                // If the vessel/part is at a stand still, velocities jump around crazily, so disregard those scenarios
                 if (part.rigidbody.velocity.magnitude > 0.2f)
                 {
+                    // The change in part velocity between this physics update and the last will give the current G force vector3 (vessel.geeForce is just an magnitude amount, not a 3D vector, so we can't use that)
                     Gforce = Vector3.Lerp(Gforce, oldVelocity - part.rigidbody.velocity, 0.2f);
                 }
                 else
@@ -126,6 +115,21 @@ namespace FStriTank
             }
         }
 
+        public override void OnUpdate()
+        {
+            // only run this code when in the hangar
+            if (HighLogic.LoadedSceneIsFlight)
+            {
+                // Update the current fuel levels in the part
+                updateFuel();
+                
+                // Rotate the liquid so it looks towrds the sky (That's how the model is set up, with z axis up).
+                // The model is set up with the Z axis facing the sky, which is what LookRotation likes. Add in a portion of the current G forces for fun.
+                liquidRotator.rotation = Quaternion.LookRotation(Vector3.Lerp(vessel.upAxis, -Gforce.normalized, 0.3f)); //Mathf.Clamp(Gforce.magnitude / 10f, 0f, 1f)));
+                // Could use the commented out tail section of the above to scale G forces influence on ther liquid by how powerful the change is, not just the direction. Not sure about the scale of the G force delta though. Looks OK as is.
+            }
+        }
+
         public void Update()
         {
             // only run this code when in the hangar, cause OnUpdate doesn't run in the hangar
@@ -133,6 +137,7 @@ namespace FStriTank
             {
                 // Update the current fuel levels in the part
                 updateFuel();
+                // Rotate the liquid, same principle as in OnUpdate, except  in the hangar, there is now vessel or world to check for, but we know Vector3.up is towards the sky.
                 liquidRotator.rotation = Quaternion.LookRotation(Vector3.up);
             }
         }
@@ -161,27 +166,37 @@ namespace FStriTank
 
         private void updateFuel()
         {            
+            // if the countdown has reached zer, check the levels agin, otherwise, decrease the count down
             if (resourceUpdateCountdown <= 0)
             {
-
+                // Reset the fuel levels in case there's an error in the next step
                 currentFuel = 0f;
                 maxFuel = 0f;
                 
-                    try
-                    {
-                        currentFuel = (float)partResource.amount;
-                        maxFuel = (float)partResource.maxAmount;
-                    }
-                    catch
-                    {
-                        getPartResource();
-                    }                
+                // In a badly configured part, looking for an amount in a resource that doesn't actually exist would cause endless error messages. This is a bit of a left over from older more advanced code, but it's a handy thing in some cases.
+                try
+                {
+                    currentFuel = (float)partResource.amount;
+                    maxFuel = (float)partResource.maxAmount;
+                }
+                catch
+                {
+                    // If the resources are invalid, try to fetch them again.
+                    getPartResource();
+                }               
+ 
+                // In case a fuel tank has a max capacity of 0 or something, we want to avoid weird numbers
                 float fuelLevel = Mathf.Clamp(currentFuel / maxFuel, 0f, 1f);
+
+                // Update the fuel level  meshes
                 showFuelLevel(fuelLevel);
+
+                // Since the countdown was done, restart it
                 resourceUpdateCountdown = updateFrequency;
             }
             else
             {
+                // Decrease the countdown. Time.deltaTime gives you the time passed since the last update call, making it good for accurate timed events.
                 resourceUpdateCountdown -= Time.deltaTime;
             }
         }
@@ -195,6 +210,7 @@ namespace FStriTank
                 // If the name matches the resouce name in the part.cfg use that.
                 if (part.Resources[i].resourceName == resourceName)
                 {
+                    // assign the partResource object in this class so it is referencing the Part's relecant PartResource.
                     partResource = part.Resources[i];
                 }
             }
