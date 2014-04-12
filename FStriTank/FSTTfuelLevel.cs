@@ -221,7 +221,7 @@ namespace FStriTank
                 {
                     if (resource.resourceName == resourceName)
                     {
-                        resourceList.Add(resource);
+                        partResource = resource;
                     }
                 }                        
              */
