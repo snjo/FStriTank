@@ -9,14 +9,18 @@ namespace FStriTank
     {
         #region cfg file values
         
+        // the name of the gauge needle gameObject
         [KSPField]
         public string needleName = "needle1";
+        // the needle is set to rotation 0,0,0 in Unity, and rotates around a single local axis, defined here.
         [KSPField]
-        public Vector3 needleAxis = Vector3.right; // rotates around the x axis if not defined otherwise in the cfg
+        public Vector3 needleAxis = Vector3.right; // equal to (1,0,0). Rotates around the x axis if not defined otherwise in the cfg
+        // The angle of the needle when the tank is empty
         [KSPField]
-        public float minAngle = -70f;
+        public float minAngle = 70f;
+        // The angle of the needle when the tank is full
         [KSPField]
-        public float maxAngle = 180f;
+        public float maxAngle = -220f;
 
         //each module monitors a separate resource type.
         [KSPField]
@@ -26,6 +30,7 @@ namespace FStriTank
 
         #region internal logic values
 
+        // the transform of the gamObject that will be rotated based on fuel level. Fetched in OnStart
         private Transform needle;
 
         // The resource in the part that should be displayed by this module
@@ -70,8 +75,13 @@ namespace FStriTank
 
         private void showFuelLevel(float fuelLevel)
         {
+            // it's a good idea to make sure the thing you are trying to affect is actually present, and a valid object. In case the findModelTransform failed originally
             if (needle != null)
             {
+                // First, it's important that you affect the local rotation of the needle, and not rotate it in world space (unlike in the FSTTfuelLevel module)
+                // Rotations are always in Quaternions internally, so you need to convert a Vector 3 (Euler angles) into a Quaternion
+                // By specifying min and max angles, and lerping between them, we can use any two angles without worrying about them being positive or negative.
+                // Like in this case where min is 70, max is -220. Or they could be the right way around. We could even do more than a 360 deg span, like -180 to 900 for something like a multi hand setup like on a clock.
                 needle.localRotation = Quaternion.Euler(needleAxis * Mathf.Lerp(minAngle, maxAngle, fuelLevel));                
             }
         }
