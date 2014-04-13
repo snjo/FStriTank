@@ -43,7 +43,7 @@ namespace FStriTank
             // only run this code when in the hangar or while flying
             if (HighLogic.LoadedSceneIsEditor || HighLogic.LoadedSceneIsFlight)
             {
-                needle = part.FindModelTransform(needleName);
+                needle = part.FindModelTransform(needleName);                
 
                 // Get the list of resources in this part
                 getPartResource();
@@ -124,6 +124,11 @@ namespace FStriTank
                     partResource = part.Resources[i];
                 }
             }
+        }
+
+        public override string GetInfo()
+        {
+            return "Semi Realistic Sloshing!";
         }
     }
 }
