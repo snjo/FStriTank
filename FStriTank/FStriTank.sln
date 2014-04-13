@@ -5,6 +5,8 @@ VisualStudioVersion = 12.0.30110.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FStriTank", "FStriTank.csproj", "{6F79ADDF-9A83-4715-B62C-00E63FA58CF5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MultiResourceFix", "..\MultiResourceFix\MultiResourceFix.csproj", "{DA64F1C0-317D-47DE-9101-DD55C97B7ADE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{6F79ADDF-9A83-4715-B62C-00E63FA58CF5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6F79ADDF-9A83-4715-B62C-00E63FA58CF5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6F79ADDF-9A83-4715-B62C-00E63FA58CF5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DA64F1C0-317D-47DE-9101-DD55C97B7ADE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA64F1C0-317D-47DE-9101-DD55C97B7ADE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA64F1C0-317D-47DE-9101-DD55C97B7ADE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA64F1C0-317D-47DE-9101-DD55C97B7ADE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

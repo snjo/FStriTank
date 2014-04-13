@@ -48,6 +48,9 @@ namespace FStriTank
         private Vector3 Gforce = Vector3.zero;
         private Vector3 oldVelocity = Vector3.zero;
 
+        [KSPField(guiActive = true, guiName = "Test: geeforceRelevance")]
+        public float geeForceRelevance = 0.5f;
+
         #endregion
 
         public override void OnStart(PartModule.StartState state)
@@ -101,7 +104,7 @@ namespace FStriTank
                 if (part.rigidbody.velocity.magnitude > 0.2f)
                 {
                     // The change in part velocity between this physics update and the last will give the current G force vector3 (vessel.geeForce is just an magnitude amount, not a 3D vector, so we can't use that)
-                    Gforce = Vector3.Lerp(Gforce, oldVelocity - part.rigidbody.velocity, 0.2f);
+                    Gforce = Vector3.Lerp(Gforce, oldVelocity - part.rigidbody.velocity, 0.1f);
                 }
                 else
                 {
@@ -118,10 +121,16 @@ namespace FStriTank
             {
                 // Update the current fuel levels in the part
                 updateFuel();
-                
+
+                //if (vessel.orbit.altitude > vessel.orbit.referenceBody.Radius * 1.1f)
+                //    geeForceRelevance = 1f;
+                //else
+                //    geeForceRelevance = 0.5f;
+
                 // Rotate the liquid so it looks towrds the sky (That's how the model is set up, with z axis up).
                 // The model is set up with the Z axis facing the sky, which is what LookRotation likes. Add in a portion of the current G forces for fun.
-                liquidRotator.rotation = Quaternion.LookRotation(Vector3.Lerp(vessel.upAxis, -Gforce.normalized, 0.3f)); //Mathf.Clamp(Gforce.magnitude / 10f, 0f, 1f)));
+                liquidRotator.rotation = Quaternion.LookRotation(Vector3.Lerp(vessel.upAxis, -Gforce.normalized, geeForceRelevance)); //Mathf.Clamp(Gforce.magnitude / 10f, 0f, 1f)));
+
                 // Could use the commented out tail section of the above to scale G forces influence on ther liquid by how powerful the change is, not just the direction. Not sure about the scale of the G force delta though. Looks OK as is.
             }
         }
@@ -222,5 +231,10 @@ namespace FStriTank
                 }                        
              */
         }
+
+        //public override string GetInfo()
+        //{
+        //    return "Semi Realistic Sloshing!";
+        //}
     }
 }

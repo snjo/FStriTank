@@ -124,11 +124,8 @@ namespace FStriTank
                     partResource = part.Resources[i];
                 }
             }
-        }
-
-        public override string GetInfo()
-        {
-            return "Semi Realistic Sloshing!";
-        }
+        }        
     }
+
+    
 }
