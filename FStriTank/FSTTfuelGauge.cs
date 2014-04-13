@@ -82,7 +82,7 @@ namespace FStriTank
                 // Rotations are always in Quaternions internally, so you need to convert a Vector 3 (Euler angles) into a Quaternion
                 // By specifying min and max angles, and lerping between them, we can use any two angles without worrying about them being positive or negative.
                 // Like in this case where min is 70, max is -220. Or they could be the right way around. We could even do more than a 360 deg span, like -180 to 900 for something like a multi hand setup like on a clock.
-                needle.localRotation = Quaternion.Euler(needleAxis * Mathf.Lerp(minAngle, maxAngle, fuelLevel));                
+                needle.localRotation = Quaternion.Euler(needleAxis * Mathf.Lerp(minAngle, maxAngle, fuelLevel)); // neeldeAxis is 1,0,0, so if fuel level is 1, we get (1,0,0) * -220 == (-220,0,0)
             }
         }
 
